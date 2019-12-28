@@ -1,0 +1,4 @@
+http://cs231n.stanford.edu/reports/2016/pdfs/262_Report.pdf
+https://github.com/charlietsai/japanese-handwriting-nn/blob/master/example_job.py
+https://web.tuat.ac.jp/~nakagawa/pub/2004/pdf/nakagawa0404a-e.pdf
+https://www.researchgate.net/publication/4135291_Characters_recognition_method_based_on_vector_field_and_simple_linear_regression_model
