@@ -13,8 +13,8 @@ with open(filename, 'rb') as f:
     fileFolder = folder + 'PNG/' + filename.split('/')[-1] + '/'
     if not exists(folder + 'PNG/'):
         mkdir(folder + 'PNG/')
-        if not exists(fileFolder):
-            mkdir(fileFolder)
+    if not exists(fileFolder):
+        mkdir(fileFolder)
     while f.readable():
         s = f.read(2052)
         if s == None or len(s) < 2052:
@@ -27,4 +27,4 @@ with open(filename, 'rb') as f:
         # iP.save('Data/' + fn, 'PNG', bits=4)
         enhancer = ImageEnhance.Brightness(iP)
         iE = enhancer.enhance(16)
-        iE.save(folder + 'PNG/' + filename.split('/')[-1] + '/' + fn, 'PNG')
+        iE.save(fileFolder + fn, 'PNG')
