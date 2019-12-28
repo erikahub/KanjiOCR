@@ -18,7 +18,7 @@ with open(filename, 'rb') as f:
         iF = Image.frombytes('F', (64, 63), r[18], 'bit', 4)
         # iP = iF.convert('P')
         iP = iF.convert('L')
-        fn = "{:1d}{:4d}{:2x}.png".format(r[0], r[2], r[3])
+        fn = "{:1d}_{:4d}_{:2x}.png".format(r[0], r[2], r[3])
         # iP.save('Data/' + fn, 'PNG', bits=4)
         enhancer = ImageEnhance.Brightness(iP)
         iE = enhancer.enhance(16)
