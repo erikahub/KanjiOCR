@@ -1,10 +1,8 @@
 import Classificactor
-import Regressor
 
 class DataModel():
-    def __init__(self, classifier: Classificator, regressor: Regressor):
+    def __init__(self, classifier: Classificator):
         self.classifier = classifier
-        self.regressor = regressor
 
     def getOutput(self):
         pass
