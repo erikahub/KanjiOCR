@@ -1,4 +1,4 @@
-"""This code is largely imported from the specification sites of http://etlcdb.db.aist.go.jp/ for the corresponding dataset.
+"""This code is based off code found in the specification pages of http://etlcdb.db.aist.go.jp/ for the corresponding dataset.
 See http://etlcdb.db.aist.go.jp/specification-of-etl-1"""
 
 import struct
