@@ -1,11 +1,14 @@
-"""this script is a test script which converts all files with a given name ('0') into pictures in folder t"""
+"""this script is a test script which converts all files with a given name ('0') into pictures in folder t
+author: rohue"""
 
 import struct
 from collections import defaultdict
 from PIL import Image, ImageEnhance
 from os import listdir, mkdir
 from os.path import isfile, join, exists, isdir, dirname
-folder = join(dirname(__file__),'DatasetETLCDB','ETL1SPLIT')
+folder = join(dirname(abspath(__file__)),'DatasetETLCDB','ETL1SPLIT')
+if not exists(join(folder, 't')):
+    mkdir(join(folder, 't'))
 # folder = join('Data', 'DatasetETLCDB','ETL1SPLIT')
 allfolders = [join(folder, f) for f in listdir(folder) if isdir(join(folder, f))]
 allfiles=[]

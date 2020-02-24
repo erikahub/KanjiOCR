@@ -1,11 +1,12 @@
-"""See http://etlcdb.db.aist.go.jp/specification-of-etl-1 for the specification of the format and the data it contains"""
+"""See http://etlcdb.db.aist.go.jp/specification-of-etl-1 for the specification of the format and the data it contains
+author: rohue"""
 
 import struct
 from collections import defaultdict
 from PIL import Image
 from os import listdir, mkdir
 from os.path import isfile, join, exists, dirname
-folder = join(dirname(__file__),'DatasetETLCDB','ETL1')
+folder = join(dirname(abspath(__file__)),'DatasetETLCDB','ETL1')
 allfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
 target = folder+'SPLIT'
 # filename = folder + '/ETL1C_07'
