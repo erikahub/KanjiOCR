@@ -6,8 +6,9 @@ from collections import defaultdict
 from PIL import Image
 from os import listdir, mkdir
 from os.path import isfile, join, exists, dirname
+ignore = ['ETL1INFO']
 folder = join(dirname(abspath(__file__)),'DatasetETLCDB','ETL1')
-allfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+allfiles = [f for f in listdir(folder) if f not in ignore and isfile(join(folder, f))]
 target = folder+'SPLIT'
 # filename = folder + '/ETL1C_07'
 for file in allfiles:
