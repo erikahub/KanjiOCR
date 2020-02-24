@@ -4,8 +4,8 @@ import struct
 from collections import defaultdict
 from PIL import Image
 from os import listdir, mkdir
-from os.path import isfile, join, exists
-folder = join('Data','DatasetETLCDB','ETL1')
+from os.path import isfile, join, exists, dirname
+folder = join(dirname(__file__),'DatasetETLCDB','ETL1')
 allfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
 target = folder+'SPLIT'
 # filename = folder + '/ETL1C_07'
@@ -19,8 +19,8 @@ for file in allfiles:
                 mkdir(join(target,file))
             except FileExistsError as err:
                 pass
-            #if the file already exists skip, else create new file containing all data
-            if not exists(join(target,file,'{:1d}'.format(s[6]))):
-                with open(join(target,file,'{:1d}'.format(s[6])), 'ab') as wf:
-                    wf.write(s)
+            # if not exists(join(target,file,'{:1d}'.format(s[6]))):
+            #append data to the file, if it does not exist it will be created
+            with open(join(target,file,'{:1d}'.format(s[6])), 'ab') as wf:
+                wf.write(s)
         
