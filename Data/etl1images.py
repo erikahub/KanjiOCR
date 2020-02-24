@@ -22,7 +22,6 @@ for direc in allfolders:
 # skip = 100
 for filename in allfiles:
     with open(filename, 'rb') as f:
-        
         # f.seek(skip * 2052)
         while f.readable():
             #get start position of name of the file used from absolute path
