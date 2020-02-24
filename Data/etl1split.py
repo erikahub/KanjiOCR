@@ -8,6 +8,7 @@ from os import listdir, mkdir
 from os.path import isfile, join, exists, dirname
 ignore = ['ETL1INFO']
 folder = join(dirname(abspath(__file__)),'DatasetETLCDB','ETL1')
+#TODO test this before usage
 allfiles = [f for f in listdir(folder) if f not in ignore and isfile(join(folder, f))]
 target = folder+'SPLIT'
 # filename = folder + '/ETL1C_07'
