@@ -5,9 +5,9 @@ import struct
 from PIL import Image, ImageEnhance
 from os import listdir
 from os.path import isfile, join
-folder = 'Data/DatasetETLCDB/ETL1SPLIT/'
+folder = join(dirname(__file__),'DatasetETLCDB','ETL1SPLIT')
 allfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
-filename = folder + '/ETL1C_07'
+filename = join(folder,'ETL1C_07')
 # skip = 100
 with open(filename, 'rb') as f:
     # f.seek(skip * 2052)
@@ -27,4 +27,4 @@ with open(filename, 'rb') as f:
         # iP.save('Data/' + fn, 'PNG', bits=4)
         enhancer = ImageEnhance.Brightness(iP)
         iE = enhancer.enhance(16)
-        iE.save(folder + 'PNG/' + filename.split('/')[-1] + '/' + fn, 'PNG')
+        iE.save(join(folder + 'PNG', filename.split('/')[-1], fn, 'PNG')
