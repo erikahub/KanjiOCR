@@ -3,3 +3,6 @@ Dataset*
 
 #VSC
 .vscode
+
+#Python cache
+__pycache_
