@@ -53,6 +53,6 @@ for filename in allfiles:
             iE.save(join(targetDir, fn), 'PNG')
     
     #prompt user for each file that is being read from
-    answ = input('Continue? (y/n)')
-    if answ != 'y' or answ != 'yes':
-        break
+    # answ = input('Continue? (y/n)')
+    # if answ != 'y' or answ != 'yes':
+    #     break
