@@ -15,6 +15,7 @@ import tensorflow as tf
 import dataconverter
 
 dc = dataconverter.DataConverter()
+# dc.split()
 dc.load()
 #ds stands for dataset
 ds_joint = tf.data.Dataset.from_tensor_slices((dc.features, dc.labels)) #x: features, y: labels
@@ -30,4 +31,4 @@ def printSome(dataset, number: int):
 tf.random.set_seed(1)
 ds = ds_joint.shuffle(buffer_size=100)
 
-printSome(ds, 4)
+printSome(ds, 500)
