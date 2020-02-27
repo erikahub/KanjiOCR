@@ -28,9 +28,9 @@ dc.load()
 
 # for i in range(len(dc.labels)):
     # dc.labels[i]+=f'_{i}'
-x = tf.Variable(dc.features(), tf.int8)
+# x = tf.Variable(dc.features(), tf.int8)
 # , dc.labels
-ds_joint = tf.data.Dataset.from_tensor_slices(()) #x: features, y: labels
+ds_joint = tf.data.Dataset.from_tensor_slices((dc.features(), dc.labels)) #x: features, y: labels
 
 tf.random.set_seed(182)
 ds = ds_joint.shuffle(buffer_size=1000, reshuffle_each_iteration=False)
