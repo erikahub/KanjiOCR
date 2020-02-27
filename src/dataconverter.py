@@ -140,7 +140,7 @@ class DataConverter():
             iF = Image.frombytes('F', (64, 63), features[idx], 'bit', 4)
             #P maps to 8bit pixels in color, L maps to 8bit pixels black and white
             iP = iF.convert('L')
-            fn = f"{count[ln]:04d}_{ln}.png"
+            fn = f"{self.charset}_{count[ln]:04d}_{ln}.png"
             # iP.save('Data/' + fn, 'PNG', bits=4)
             enhancer = ImageEnhance.Brightness(iP)
             iE = enhancer.enhance(16)
