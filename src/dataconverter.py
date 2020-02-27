@@ -9,17 +9,23 @@ import struct
 from PIL import Image, ImageEnhance
 from os import listdir, mkdir, sep
 from os.path import isfile, isdir, join, exists
+import sklearn.model_selection as sk
 
 #TODO this is only ETL1
 #TODO maybe insert progress bars
 class DataConverter():
     """Converts data from the ETL Databases to either images or simply splits the data from the Databases into separate files"""    
     def __init__(self):
-        self.rootDir = join(paths.getRootPath(), 'Data','DatasetETLCDB')
+        self.rootDir = paths.getDBPath()
         #TODO maybe change to dict containing data structure for struct
         self.ETL = ['ETL1']
+        self.CHARSETS = {self.ETL[0] : 'JIS_X0201_'}
         self.db = self.ETL[0]
-        self.data = defaultdict(list)
+        self.charset = self.CHARSETS[self.db]
+        # self.data = defaultdict(list)
+        self.features = list()
+        self.labels = list()
+
 
     def getDB(self):
         return self._db
@@ -58,7 +64,8 @@ class DataConverter():
 
     def load(self, ignore: list = []):
         """Loads the data of a single full split(!) database into memory"""
-        self.data.clear()
+        self.features.clear()
+        self.labels.clear()
         self.currentDB = self.db
         sourceFolder = join(self.rootDir, self.db + 'SPLIT')
         #get all files from the ETLxSPLIT subfolders
@@ -81,7 +88,8 @@ class DataConverter():
                         break
                     #19 records, omitted records (x option) with undefined data
                     r = struct.unpack('>H2sH6BI4H4B4x2016s4x', s)
-                    self.data['JIS X0201 '+str(r[3])] += [r[18]]
+                    self.features.append(r[18])
+                    self.labels.append(self.charset + str(r[3]))
 
             #prompt user for every 10th file that is being read from
             # if i % 10 == 0:
@@ -89,43 +97,62 @@ class DataConverter():
                 # if answ[0] != 'y':
                     # break
 
-    def exportPNGOrganised(self):
+    def exportPNGOrganised(self, train_size = None, random_state: int = None):
+        """Exports all loaded images currently in the features and labels lists as PNG in the following structure:
+            Path/DBnamePNG/
+            |_train
+            |   |_FolderCharacter1 (contains character images of character 1 only)
+            |   |_FolderCharacter2 (same as above for character 2)
+            |   |_...
+            |_test
+                |_FolderCharacter1
+                |_...
+            """
         dbFolder = join(self.rootDir, self.currentDB + 'PNG')
-        keys = self.data.keys()
-        if len(keys) > 0:
-            if not exists(dbFolder):
-                mkdir(dbFolder)
-        else:
-            print(f"{bcolors.WARNING}Warning: No labels found{bcolors.ENDC}")
-        lcount = 0 #labelcount
-        for label in keys:
-            features = self.data[label]
-            count = 0 #feature number within the label
-            ln = label[len('JIS X0201 '):]
-            targetDir = join(dbFolder, ln)
+        traindir = join(dbFolder, 'train')
+        testdir = join(dbFolder, 'test')
+        if not exists(dbFolder):
+            mkdir(dbFolder)
+        if not exists(traindir):
+            mkdir(traindir)
+        if not exists(testdir):
+            mkdir(testdir)
+
+        (x_train, x_test, y_train, y_test ) = \
+          sk.train_test_split(self.features, self.labels, train_size=train_size, random_state=random_state)
+
+        self._export(x_train, y_train, traindir)
+        self._export(x_test, y_test, testdir)
+
+
+
+    def _export(self, features, labels, path):
+        count = defaultdict(int)
+        if len(labels) != len(features):
+            raise RuntimeError("labels and features do not match in size")
+        for idx in range(len(labels)):
+            label = labels[idx]
+            ln = label[len(self.charset):]
+            count[ln]+=1
+            targetDir = join(path, ln)
             if not exists(targetDir):
                 mkdir(targetDir)
-            for f in features:
-                count+=1
-                iF = Image.frombytes('F', (64, 63), f, 'bit', 4)
-                #P maps to 8bit pixels in color, L maps to 8bit pixels black and white
-                iP = iF.convert('L')
-                fn = f"{count:04d}_{ln}.png"
-                # iP.save('Data/' + fn, 'PNG', bits=4)
-                enhancer = ImageEnhance.Brightness(iP)
-                iE = enhancer.enhance(16)
-
-                if not exists(targetDir):
-                    mkdir(targetDir)
-                iE.save(join(targetDir, fn), 'PNG')
+            iF = Image.frombytes('F', (64, 63), features[idx], 'bit', 4)
+            #P maps to 8bit pixels in color, L maps to 8bit pixels black and white
+            iP = iF.convert('L')
+            fn = f"{count[ln]:04d}_{ln}.png"
+            # iP.save('Data/' + fn, 'PNG', bits=4)
+            enhancer = ImageEnhance.Brightness(iP)
+            iE = enhancer.enhance(16)
+            iE.save(join(targetDir, fn), 'PNG')
 
 
     def exportPNGSplit(self, fileList: list, p: float):
+        """Not implemented"""
         pass
 
+
+
 # dc = DataConverter()
-# dc.split()
 # dc.load()
-# dc.exportPNGOrganised()
-# print(dc.data.keys())
-# print(dc.data['JIS X0201 193'][0])
+# dc.exportPNGOrganised(0.7, 182)
