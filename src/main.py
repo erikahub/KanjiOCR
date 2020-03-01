@@ -19,12 +19,14 @@ for file in data_paths[:100]:
     label = file[5:-4]
     # label = file[len(dc.charset)+5:-4]
     x_train.append([x/255. for x in imageio.imread(paths.join(data_path, 'train', label, file))])
-    y_train.append(label)
+    y_train.append(int(label)) #didn't have any effect, maybe go back to strings
 
 print('Took: ',time.time() - start, 'seconds')
 
 import tensorflow as tf
-x_train = tf.reshape(x_train, [len(x_train), 64*63])
+y_train = tf.convert_to_tensor(y_train)
+x_train = tf.reshape(x_train, [len(x_train), 63,64,1])
+# x_train = tf.reshape(x_train, [len(x_train), 64*63])
 # x = tf.convert_to_tensor(x_train, dtype=tf.float32)
 # print(x_train.shape)
 def printSome(dataset, number: int):
@@ -74,13 +76,39 @@ ds_train = ds.take(take_size_train), ds.skip(take_size_train).take(take_size_tes
 # ds_test = ds_test.map(lambda x: (x['features'], x['label']))
 """
 
-ds_train = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-######################\"""
-print('ds_train: ', type(ds_train))
+# ds_train = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+######################\
+# """
+# print(list(ds_train.as_numpy_iterator()))
+# print('ds_train: ', type(ds_train))
 print('x_train: ', type(x_train))
 print('y_train: ', type(y_train))
 
-######################\"""
+######################\
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten, Activation, Dropout, Conv2D, MaxPooling2D
+model = Sequential()
+model.add(Conv2D(32,(5,5),activation='relu', 
+                                 input_shape=(63,64,1)))
+#model.add(MaxPooling2D((2, 2)))
+model.add(Conv2D(64, (5, 5), activation='relu'))
+#model.add(MaxPooling2D((2, 2)))
+model.add(Flatten())
+model.add(Dense(200, activation='softmax'))
+
+
+model.compile(loss='sparse_categorical_crossentropy',
+              optimizer='sgd',
+              metrics=['accuracy'])
+
+
+model.fit(x_train, y_train,
+          batch_size=100,
+          epochs=5,
+          verbose=1)
+
+"""
 model = tf.keras.Sequential()
 # model.add(tf.keras.layers.Conv2D(
 #     filters=32, kernel_size=(5, 5),
@@ -94,11 +122,12 @@ print(model.compute_output_shape(
     input_shape=(None, 1)
 ))
 
-"""
-model.summary()
 model.compile(optimizer='adam',
     loss='sparse_categorical_crossentropy',
     metrics=['accuracy'])
 
+model.summary()
+
 model.fit(ds_train, epochs=1, steps_per_epoch=1, verbose=1)
 """
+model.fit(x=x_train, y=y_train, epochs=1, steps_per_epoch=1, verbose=1)
