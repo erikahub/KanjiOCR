@@ -1,7 +1,9 @@
+#In[]
 import imageio
 import paths
 from os import listdir
 
+#In[]
 import time
 import dataconverter
 dc = dataconverter.DataConverter()
@@ -15,7 +17,12 @@ for folder in tmp:
 del tmp
 y_train = []
 x_train = []
-for file in data_paths[:100]:
+# i = 0
+for file in data_paths:
+    # i+=1
+    # if not (i & 127 == 100):
+        # continue
+    # print(i)
     label = file[5:-4]
     # label = file[len(dc.charset)+5:-4]
     x_train.append([x/255. for x in imageio.imread(paths.join(data_path, 'train', label, file))])
@@ -23,6 +30,7 @@ for file in data_paths[:100]:
 
 print('Took: ',time.time() - start, 'seconds')
 
+#In[]
 import tensorflow as tf
 y_train = tf.convert_to_tensor(y_train)
 x_train = tf.reshape(x_train, [len(x_train), 63,64,1])
@@ -47,20 +55,6 @@ features = dc.features
 
 ds_joint = tf.data.Dataset.from_tensor_slices((features, labels)) #x: features, y: labels
 
-######################\"""
-print('ds_join: ',type(ds_joint))
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-x_train, x_test = x_train / 255.0, x_test / 255.0
-print('mnist train: ',type(x_train))
-model = tf.keras.models.Sequential([
-  tf.keras.layers.Flatten(input_shape=(28, 28)),
-  tf.keras.layers.Dense(128, activation='relu'),
-  tf.keras.layers.Dropout(0.2),
-  tf.keras.layers.Dense(10)
-])
-predictions = model(x_train[:1]).numpy()
-# print(predictions)
-######################\"""
 
 tf.random.set_seed(182)
 ds = ds_joint.shuffle(buffer_size=1000, reshuffle_each_iteration=False)
@@ -77,14 +71,6 @@ ds_train = ds.take(take_size_train), ds.skip(take_size_train).take(take_size_tes
 """
 
 # ds_train = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-######################\
-# """
-# print(list(ds_train.as_numpy_iterator()))
-# print('ds_train: ', type(ds_train))
-print('x_train: ', type(x_train))
-print('y_train: ', type(y_train))
-
-######################\
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Activation, Dropout, Conv2D, MaxPooling2D
@@ -95,7 +81,7 @@ model.add(Conv2D(32,(5,5),activation='relu',
 model.add(Conv2D(64, (5, 5), activation='relu'))
 #model.add(MaxPooling2D((2, 2)))
 model.add(Flatten())
-model.add(Dense(200, activation='softmax'))
+model.add(Dense(300, activation='softmax'))
 
 
 model.compile(loss='sparse_categorical_crossentropy',
@@ -108,26 +94,4 @@ model.fit(x_train, y_train,
           epochs=5,
           verbose=1)
 
-"""
-model = tf.keras.Sequential()
-# model.add(tf.keras.layers.Conv2D(
-#     filters=32, kernel_size=(5, 5),
-#     strides=(1, 1), padding='same',
-#     data_format='channels_last',
-#     name='conv_1', activation='relu'))
-model.add(tf.keras.layers.Dense(16, activation='sigmoid', input_shape=(1,)))
-model.add(tf.keras.layers.Dense(3, activation='softmax'))
-# model.add(tf.keras.layers.Flatten())
-print(model.compute_output_shape(
-    input_shape=(None, 1)
-))
-
-model.compile(optimizer='adam',
-    loss='sparse_categorical_crossentropy',
-    metrics=['accuracy'])
-
-model.summary()
-
-model.fit(ds_train, epochs=1, steps_per_epoch=1, verbose=1)
-"""
 model.fit(x=x_train, y=y_train, epochs=1, steps_per_epoch=1, verbose=1)
