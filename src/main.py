@@ -13,10 +13,13 @@
 
 import tensorflow as tf
 import dataconverter
+import matplotlib.pyplot as plt
+from PIL import Image
 
 dc = dataconverter.DataConverter()
 # dc.split()
 dc.load()
+# dc.exportPNGOrganised() 
 #ds stands for dataset
 ds_joint = tf.data.Dataset.from_tensor_slices((dc.features, dc.labels)) #x: features, y: labels
 
@@ -31,4 +34,18 @@ def printSome(dataset, number: int):
 tf.random.set_seed(1)
 ds = ds_joint.shuffle(buffer_size=100)
 
-printSome(ds, 500)
+# print(dc.features[-1])
+
+
+# a = Image.open('C:\\Users\\Bjoern_Lewe\\Git Repo\\Data\\DatasetETLCDB\\ETL1PNG\\train\\48\\0001_48.png')
+
+# a.show()
+
+
+# plt.figure()
+# plt.imshow(a)
+# plt.colorbar()
+# plt.grid(False)
+# plt.show()
+
+# printSome(ds, 500)

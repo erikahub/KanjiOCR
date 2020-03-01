@@ -6,10 +6,14 @@ from colors import bcolors
 import paths
 from collections import defaultdict
 import struct
+import re
+import numpy as np
 from PIL import Image, ImageEnhance
 from os import listdir, mkdir, sep
 from os.path import isfile, isdir, join, exists
 import sklearn.model_selection as sk
+import tensorflow as tf
+from keras.utils import to_categorical
 
 #TODO this is only ETL1
 #TODO maybe insert progress bars
@@ -151,6 +155,32 @@ class DataConverter():
         """Not implemented"""
         pass
 
+    def setFeaturesToBinary(self):
+        tmpFeatures = []
+        for feature in self.features:
+            img = feature / 10.0
+            # print(feature,":\t",img)
+            tmpFeatures.append(img)
+        self.features = tmpFeatures
+
+    def convertFeaturesToNumpyArray(self):
+        tmpFeatures = []
+        for feature in self.features:
+            img = Image.frombytes('F',(64,63), feature,'bit',4)
+            pix = np.array(img)
+            tmpFeatures.append(pix)
+        self.features = tmpFeatures
+        self.setFeaturesToBinary()
+        self.features = np.array(self.features)
+        print(self.features.shape)
+    
+
+    def convertLabels(self):
+        tmpLabels = []
+        for label in self.labels:
+            tmpLabels.append(np.array(int(re.split("_", label)[-1])))
+        self.labels = tmpLabels
+        self.labels = np.array(self.labels)
 
 
 # dc = DataConverter()
