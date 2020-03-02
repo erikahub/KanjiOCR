@@ -12,16 +12,17 @@ start = time.time()
 
 BATCH_SIZE = 32
 IMG_HEIGHT = 63
-IMG_WIGHT = 64
+IMG_WIDTH = 64
+IMG_CHANNELS = 1
 img_gen = ImageDataGenerator()
 # img_gen = ImageDataGenerator(rescale=1./255)
 data_path = paths.join(paths.getDBPath(), 'ETL1PNG')
 
 args = {'batch_size':BATCH_SIZE, 
         'shuffle':True,
-        'target_size':(IMG_HEIGHT, IMG_WIGHT),
+        'target_size':(IMG_HEIGHT, IMG_WIDTH),
         'color_mode':'grayscale',
-        'class_mode':'sparse' #change to binary for binary encoded labels
+        'class_mode':'categorical' #binary for binary encoded labels, categorical for hot-encoded and sparse for integer labels
         }
 train_data_gen = img_gen.flow_from_directory(directory=paths.join(data_path, 'train'), **args)
 test_data_gen = img_gen.flow_from_directory(directory=paths.join(data_path, 'test'),**args)
@@ -33,33 +34,32 @@ test_data_gen = img_gen.flow_from_directory(directory=paths.join(data_path, 'tes
 
 #TODO TODO TODO TODO TODO look into how to use the data_gen. Possible issue with the data shape (63,64,1)
 
-y_train = []
-x_train = []
-
 print('Took: ',time.time() - start, 'seconds')
 
-##In[]
-y_train = tf.convert_to_tensor(y_train)
-x_train = tf.reshape(x_train, [len(x_train), 63,64,1])
+# y_train = tf.convert_to_tensor(y_train)
+# x_train = tf.reshape(x_train, [len(x_train), 63,64,1])
 
 model = Sequential()
-model.add(Conv2D(32,(5,5),activation='relu', 
-                                 input_shape=(63,64,1)))
+model.add(Conv2D(32,(5,5), padding='same', activation='relu', 
+                                 input_shape=(IMG_HEIGHT,IMG_WIDTH,IMG_CHANNELS)))
 #model.add(MaxPooling2D((2, 2)))
-model.add(Conv2D(64, (5, 5), activation='relu'))
+model.add(Conv2D(64, (5, 5), padding='same', activation='relu'))
 #model.add(MaxPooling2D((2, 2)))
 model.add(Flatten())
-model.add(Dense(300, activation='softmax'))
+model.add(Dense(128, activation='softmax'))
+model.add(Dense(1))
 
 
-model.compile(loss='sparse_categorical_crossentropy',
+#sparse_categorical_crossentropy results in the model only allowing the number of labels input into Dense -1.
+#one-hot encoding is required with categorical_crossentropy
+#https://stackoverflow.com/a/59148543
+model.compile(loss='categorical_crossentropy',
               optimizer='sgd',
               metrics=['accuracy'])
 
 
-model.fit(x_train, y_train,
-          batch_size=100,
-          epochs=5,
+model.fit(train_data_gen,
+          epochs=1, #TODO change this back to higher numbers to try achieving higher accuracy
           verbose=1)
 
 # model.fit(x=x_train, y=y_train, epochs=1, steps_per_epoch=1, verbose=1)
