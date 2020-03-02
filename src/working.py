@@ -5,10 +5,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Activation, Dropout, Conv2D, MaxPooling2D
 import paths
 from os import listdir
-import time
+from time import time, asctime, struct_time
 
 ## In[]
-start = time.time()
+start = time()
 
 BATCH_SIZE = 32
 IMG_HEIGHT = 63
@@ -32,13 +32,11 @@ test_data_gen = img_gen.flow_from_directory(directory=paths.join(data_path, 'tes
                                             # color_mode='grayscale',
                                             # class_mode='sparse')#change to binary for binary encoded labels
 
-#TODO TODO TODO TODO TODO look into how to use the data_gen. Possible issue with the data shape (63,64,1)
 
-print('Took: ',time.time() - start, 'seconds')
+print('Took: ',time() - start, 'seconds')
 
 # y_train = tf.convert_to_tensor(y_train)
 # x_train = tf.reshape(x_train, [len(x_train), 63,64,1])
-
 model = Sequential()
 model.add(Conv2D(32,(5,5), padding='same', activation='relu', 
                                  input_shape=(IMG_HEIGHT,IMG_WIDTH,IMG_CHANNELS)))
@@ -57,9 +55,12 @@ model.compile(loss='categorical_crossentropy',
               optimizer='sgd',
               metrics=['accuracy'])
 
+time
+start = asctime(time())
 
 model.fit(train_data_gen,
           epochs=1, #TODO change this back to higher numbers to try achieving higher accuracy
           verbose=1)
-
+end=asctime(time())
+print(f'Start time: {ascitime(start)}, End time: {ascitime(end)}, took {asctime(end-start)}')
 # model.fit(x=x_train, y=y_train, epochs=1, steps_per_epoch=1, verbose=1)
