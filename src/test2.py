@@ -8,6 +8,7 @@ import dataconverter
 import JISDictClass
 import re
 from PIL import Image
+import math
 
 print(tf.__version__)
 
@@ -16,8 +17,11 @@ dc.load()
 dc.convertFeaturesToNumpyArray()
 dc.convertLabels()
 
-train_images = test_images = dc.features
-train_labels = test_labels = dc.labels
+print(math.floor(len(dc.features) * 0.8))
+train_images = dc.features[0:math.floor(len(dc.features) * 0.8)]
+test_images = dc.features[math.floor(len(dc.features) * 0.8)+1:len(dc.features)]
+train_labels = dc.labels[0:math.floor(len(dc.features) * 0.8)]
+test_labels = dc.labels[math.floor(len(dc.features) * 0.8)+1:len(dc.features)]
 
 JIS = JISDictClass.JISDictClass()
 # int(re.split("_", train_labels[200])[-1]))
@@ -74,8 +78,8 @@ print("train_label:",len(set(train_labels)),"\nDictLabel:",len(JIS.getValues()),
 
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(63,64)),
-    keras.layers.Dense(128,activation='relu'),
-    keras.layers.Dense(len(JIS.getValues()))
+    keras.layers.Dense(128,activation='selu'),
+    keras.layers.Dense(len(np.unique(train_labels)))
 ])
 
 #compile model
@@ -130,9 +134,9 @@ def plot_image(i, predictions_array, true_label, img):
 def plot_value_array(i, predictions_array, true_label):
   predictions_array, true_label = predictions_array, true_label[i]
   plt.grid(False)
-  plt.xticks(range(10))
+  plt.xticks(range(len(JIS.getValues())))
   plt.yticks([])
-  thisplot = plt.bar(range(10), predictions_array, color="#777777")
+  thisplot = plt.bar(range(len(JIS.getValues())), predictions_array, color="#777777")
   plt.ylim([0, 1])
   predicted_label = np.argmax(predictions_array)
 
@@ -159,7 +163,7 @@ def predictAllTest_Images():
 def predictSingleImage(img):
     img = (np.expand_dims(img,0))
     predictions_single = probability_model.predict(img)
-    plot_value_array(1,predictions_single[0], test_labels)
+    plot_value_array(200,predictions_single[0], test_labels)
     _ = plt.xticks(range(len(JIS.getValues())),JIS.getValues(),rotation=45)
     plt.show()
 
