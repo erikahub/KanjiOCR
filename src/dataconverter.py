@@ -14,7 +14,8 @@ import sklearn.model_selection as sk
 #TODO this is only ETL1
 #TODO maybe insert progress bars
 class DataConverter():
-    """Converts data from the ETL Databases to either images or simply splits the data from the Databases into separate files"""    
+    """Converts data from the ETL Databases to either images or simply splits the data from the Databases into separate files.
+    Change the value of DataConverter.db to one of the values contained in DataConverter.ETL to choose a different database."""    
     def __init__(self):
         self.rootDir = paths.getDBPath()
         #TODO maybe change to dict containing data structure for struct
