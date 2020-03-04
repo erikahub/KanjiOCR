@@ -3,9 +3,11 @@ Skriptsprachen Projekt FH SWF 2019/20. Schriftzeichenerkennung mit Machine Learn
 
 Zur Verwendung sollte die Dokumentation ausreichen. Trotzdem folgt noch eine kleine Anleitung.
 
-Die nötigen Daten können unter http://etlcdb.db.aist.go.jp/ gefunden werden (passwortgeschützt).
-
 Es werden benötigt bzw wurde verwendet: Tensorflow 2.1 mit Python 3.7.6 und scitkit-learn 0.22.1.
+
+Die nötigen Daten können unter http://etlcdb.db.aist.go.jp/ gefunden werden (passwortgeschützt). Der Pfad zu diesen Datenbanken kann zur Verwendung in der paths.py Datei geändert werden, andernfalls sollte die ETL1 Datenbank in diesen Ordner entpackt werden:
+KanjiOCR/Data/DatasetETLCDB/ETL1
+Informationen über das Datenformat findet man auch auf der vorig genannten Seite.
 
 Um die benötigte Zeit für das Training von Modellen zu verkürzen, wird empfohlen den GPU Support zu verwenden. Eine Anleitung ist unter https://www.tensorflow.org/install/gpu zu finden.
 
