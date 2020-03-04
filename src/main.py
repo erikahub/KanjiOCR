@@ -8,11 +8,8 @@ import paths
 # dc.exportPNGOrganised(0.7, 182) #export data from memory to PNGs and split into train and test folders
 
 network = CNN_ETL1()
-# network.train(epochs=15)
+network.train(epochs=15)
 # network.saveModel()
 # network.predict(paths.join(paths.getRootPath(), 'Data', 'my_test'))
 
 #network.model.summary()
-
-import models
-models.createModels(network)
