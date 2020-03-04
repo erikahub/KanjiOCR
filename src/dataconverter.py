@@ -146,14 +146,3 @@ class DataConverter():
             enhancer = ImageEnhance.Brightness(iP)
             iE = enhancer.enhance(16)
             iE.save(join(targetDir, fn), 'PNG')
-
-
-    def exportPNGSplit(self, fileList: list, p: float):
-        """Not implemented"""
-        pass
-
-
-
-# dc = DataConverter()
-# dc.load()
-# dc.exportPNGOrganised(0.7, 182)
