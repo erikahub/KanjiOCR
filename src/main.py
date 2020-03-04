@@ -40,7 +40,7 @@ model.add(Conv2D(32,(5,5), padding='same', activation='relu',
 model.add(MaxPooling2D((8, 8)))
 model.add(Conv2D(64, (5, 5), padding='same', activation='softmax'))
 model.add(Flatten())
-model.add(Dense(11, activation='softmax')) #this is supposed to be the number of labels.
+model.add(Dense(97, activation='softmax')) #this is supposed to be the number of labels.
 
 #sparse_categorical_crossentropy results in the model only allowing the number of labels input into Dense -1.
 #one-hot encoding is required with categorical_crossentropy
