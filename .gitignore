@@ -3,4 +3,7 @@ Dataset*
 
 #VSC
 .vscode
-Data/DatasetETLCDB/zips/ETL2.zip
+
+#Python cache
+__pycache_*
+src/d.py
