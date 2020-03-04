@@ -10,3 +10,6 @@ def getRootPath():
 
 def getDBPath():
     return join(getRootPath(), 'Data','DatasetETLCDB')
+
+def getModelsPath():
+    return join(getRootPath(), 'Models')
