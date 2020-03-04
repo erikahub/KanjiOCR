@@ -1,8 +1,9 @@
-"""TODO WRITE THIS"""
+"""TODO WRITE THIS
+author: rohue"""
 ##In[]
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Flatten, Activation, Dropout, Conv2D, MaxPooling2D
 import paths
 from os import listdir
@@ -15,31 +16,32 @@ class CNN_ETL1():
         super().__init__()
         self.model = Sequential()
         self.fit_args = {'verbose':1}
-
-        #TODO look into this. rescaling is supposed to be better but seems to yield worse results?
-        # img_gen = ImageDataGenerator()
-        img_gen = ImageDataGenerator(rescale=1./255)
-        data_path = paths.join(paths.getDBPath(), 'ETL1PNG')
-
-        self.BATCH_SIZE = 64
-        self.IMG_HEIGHT = 63
-        self.IMG_WIDTH = 64
-        self.IMG_CHANNELS = 1
-
-        start = time()
-        #list of arguments to be extracted for use in data generator objects
-        args = {'batch_size':BATCH_SIZE, 
+        
+        self._BATCH_SIZE = 64
+        self._IMG_HEIGHT = 63
+        self._IMG_WIDTH = 64
+        self._IMG_CHANNELS = 1
+        self.img_gen = ImageDataGenerator()
+        # self.img_gen = ImageDataGenerator(rescale=1./255)
+        self.img_gen_args = {'batch_size':self._BATCH_SIZE, 
                 'shuffle':True,
-                'target_size':(IMG_HEIGHT, IMG_WIDTH),
+                'target_size':(self._IMG_HEIGHT, self._IMG_WIDTH),
                 'color_mode':'grayscale',
                 'class_mode':'categorical' #binary for binary encoded labels, categorical for hot-encoded and sparse for integer labels
                 }
-        self.train_data_gen = img_gen.flow_from_directory(directory=paths.join(data_path, 'train'), **args)
-        self.test_data_gen = img_gen.flow_from_directory(directory=paths.join(data_path, 'test'),**args)
+
+        #TODO look into this. rescaling is supposed to be better but seems to yield worse results?
+        data_path = paths.join(paths.getDBPath(), 'ETL1PNG')
+
+
+        start = time()
+        #list of arguments to be extracted for use in data generator objects
+        self.train_data_gen = self.img_gen.flow_from_directory(directory=paths.join(data_path, 'train'), **self.img_gen_args)
+        self.test_data_gen = self.img_gen.flow_from_directory(directory=paths.join(data_path, 'test'),**self.img_gen_args)
         print('Took: ',time() - start, 'seconds')
 
         self.model.add(Conv2D(32,(5,5), padding='same', activation='relu', 
-                                         input_shape=(IMG_HEIGHT,IMG_WIDTH,IMG_CHANNELS)))
+                                         input_shape=(self._IMG_HEIGHT,self._IMG_WIDTH,self._IMG_CHANNELS)))
         # model.add(MaxPooling2D((3, 3)))
         self.model.add(MaxPooling2D((8, 8)))
         self.model.add(Conv2D(64, (5, 5), padding='same', activation='softmax'))
@@ -69,13 +71,28 @@ class CNN_ETL1():
         print(f'Test loss: {test_loss}, test accuracy: {test_acc}')
 
 
+    def predict(self, path_to_folder: str):
+        prediction_data_gen = self.img_gen.flow_from_directory(directory=path_to_folder, **self.img_gen_args)
+        output = self.model.predict(prediction_data_gen)
+        maxpos=None
+        maxval = 0
+        for i in range(len(output[0])):
+            if maxval < output[0][i]:
+                maxval=output[0][i]
+                maxpos=i
+        print('No. of classes:', len(output[0]), 'Max:', max(output[0]), 'class index:',maxpos)
+
+
     def saveModel(self):
         """Save a (compiled) model including its architecture and weights to a file."""
-        fn = input('Save as: ')
-        if any('\/*><"|?:') in fn:
-            print('File could not be created, invalid file name.')
-            return
-        self.model.save(paths.join(paths.getModelsPath(), fn))
+        while True:
+            fn = input('Save as: ')
+            #if contains invalid chars, repeat input
+            if any([True for c in '\\/*><"|?:' if c in fn]):
+                print('File could not be created, invalid file name.')
+                continue
+            self.model.save(paths.join(paths.getModelsPath(), fn))
+            break
 
 
     def loadModel(self):
@@ -89,4 +106,4 @@ class CNN_ETL1():
         except ValueError as e:
             print('Choice was not an integer.')
             return
-        self.model.load_weights(paths.join(paths.getModelsPath, cm))
+        self.model = load_model(paths.join(paths.getModelsPath(), models[cm]))
